@@ -12,7 +12,7 @@ const CardContainer = styled(Card)({
 });
 
 const Media = styled(CardMedia)({
-  height: '50%',  // Adjust to take up 1/2 of the card's height
+  height: '50%',
   backgroundSize: 'cover',
   backgroundPosition: 'center',
 });
@@ -45,28 +45,31 @@ const ReadMoreButton = styled(Button)({
 });
 
 const NewsCard = ({ article }) => {
-  const { title, description, urlToImage, author } = article;
+  const { url, title, description, urlToImage, author } = article;
+
+  // Default image for cases where urlToImage might be missing
+  const defaultImage = '../../public/default.png';
 
   return (
     <CardContainer>
       <Media
-        image={urlToImage}
+        image={urlToImage || defaultImage} // Use default image if urlToImage is missing
         title={title}
       />
       <Content>
         <Title variant="h6">
-          {title}
+          {title || 'No Title Available'}
         </Title>
         <Description variant="body2" color="textSecondary">
-          {description}
+          {description || 'No description available.'}
         </Description>
         <Typography variant="caption" color="textSecondary">
-          {author}
+          {author || 'Unknown Author'}
         </Typography>
         <Tooltip title="Read More">
-        <IconButton target="_blank" rel="noopener noreferrer">
+          <IconButton href={url} target="_blank" rel="noopener noreferrer">
             <ReadMoreIcon />
-        </IconButton>
+          </IconButton>
         </Tooltip>
       </Content>
     </CardContainer>

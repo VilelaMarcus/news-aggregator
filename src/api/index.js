@@ -2,24 +2,20 @@ import axios from 'axios';
 
 // Fetch news from the News API ORG
 export const fetchNewsApiOrg = async ({ 
-    locationUri = 'us', 
     category = '', 
-    keyword = ''
+    keyword = 'us'
 } = {}) => {
 
     let queryParameters = '';
     if (keyword) {
         queryParameters += `q=${keyword}&`;
     }
-    if (locationUri) {
-        queryParameters += `country=${locationUri}&`;
-    }
     if (category) {
         queryParameters += `category=${category}&`;
     }
 
     try {
-        const { data } = await axios.get(`https://newsapi.org/v2/top-headlines?${queryParameters}apiKey=${import.meta.env.VITE_NEWS_API_ORG_KEYS}`);
+        const { data } = await axios.get(`https://newsapi.org/v2/everything?${queryParameters}apiKey=${import.meta.env.VITE_NEWS_API_ORG_KEYS}`);
         return data.articles;
     } catch (error) {
         console.error('Error fetching news from NewsAPI.org:', error);

@@ -1,14 +1,11 @@
 import { useState } from "react";
-import { ProSidebar, Menu, SubMenu, MenuItem } from "react-pro-sidebar";
+import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import HandymanIcon from '@mui/icons-material/Handyman';
-import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -115,7 +112,7 @@ const Sidebar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Geral
+              Bookmarks
             </Typography>
             <Item
               title="Cliente"
@@ -124,36 +121,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Visitas / Cidades"
-              to="/visitas"
-              icon={<ReceiptOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Equipamentos"
-              to="/aparelho"
-              icon={<RemoveRedEyeOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-            title="Pecas"
-            to="/pecas"
-            icon={<HandymanIcon />}
-            selected={selected}
-            setSelected={setSelected}
-            />
-
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Lasers
-            </Typography>  
-           <Box
+            <Box
               sx={{
                 "& .pro-inner-list-item": {
                   background: `${colors.primary[400]} !important`,
@@ -164,21 +132,6 @@ const Sidebar = () => {
               }}
             >
             </Box>
-         
-            {/* <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Charts
-            </Typography>
-            <Item
-              title="Bar Chart"
-              to="/bar"
-              icon={<BarChartOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
           </Box>
         </Menu>
       </ProSidebar>
