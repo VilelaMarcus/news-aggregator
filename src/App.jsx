@@ -5,29 +5,31 @@ import Sidebar from "./global/Sidebar";
 import { CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import Home from "./screen/Home";
-import MobileFooter from "./global/MobileFooter"; // Import the mobile footer component
+import MobileFooter from "./global/MobileFooter"; 
 
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
+  const [searchQuery, setSearchQuery] = useState(""); // Estado para armazenar a pesquisa
   
-  // Use useMediaQuery to check if the screen width is less than 600px (mobile devices)
   const isMobile = useMediaQuery('(max-width:600px)');
+
+  const handleSearch = (query) => {
+    setSearchQuery(query); // Atualiza o estado com o valor da pesquisa
+  };
 
   return (
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <div className="app" style={{ display: 'flex' }}>
-            {/* Conditionally render the sidebar */}
             {!isMobile && <Sidebar isSidebar={isSidebar} />}
             <main className="content" style={{ padding: '16px', overflowY: 'auto', height: '100vh' }}>
-              <Topbar setIsSidebar={setIsSidebar} />
+              <Topbar setIsSidebar={setIsSidebar} onSearch={handleSearch} />
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home searchQuery={searchQuery} />} /> {/* Passa a busca como props */}
               </Routes>
             </main>
-            {/* Render the MobileFooter only on mobile devices */}
             {isMobile && <MobileFooter />}
           </div>
         </ThemeProvider>
