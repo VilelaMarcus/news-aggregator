@@ -6,6 +6,7 @@ import { CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import Home from "./screen/Home";
 import MobileFooter from "./global/MobileFooter"; 
+import BookmarkedNews from "./screen/BookmarkedNews";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -27,7 +28,8 @@ function App() {
             <main className="content" style={{ padding: '16px', overflowY: 'auto', height: '100vh' }}>
               <Topbar setIsSidebar={setIsSidebar} onSearch={handleSearch} />
               <Routes>
-                <Route path="/" element={<Home searchQuery={searchQuery} />} /> {/* Passa a busca como props */}
+                <Route path="/" element={<Home searchQuery={searchQuery} />} /> 
+                <Route path="/bookmarked" element={<BookmarkedNews />} />
               </Routes>
             </main>
             {isMobile && <MobileFooter />}

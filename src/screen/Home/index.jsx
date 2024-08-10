@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react';
-import { Container, Grid, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
+import { Container, Grid, FormControl, InputLabel, Select, MenuItem, TextField, CircularProgress, Backdrop  } from '@mui/material';
 import NewsCard from '../../components/NewsCard';
 import { fetchNewsAPI, fetchNewsApiOrg } from '../../api';
 
-const Home = () => {
+const Home = ({ searchQuery }) => {
     const [articles, setArticles] = useState([]);
     const [filteredArticles, setFilteredArticles] = useState([]);
     const [sources, setSources] = useState([]);
     const [selectedSource, setSelectedSource] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const fetchNews = async () => {
+        setLoading(true);
+        const fetchNews = async (query) => {
             try {
                 const [apiOrgData, apiData] = await Promise.all([
-                    fetchNewsApiOrg({}),
-                    fetchNewsAPI({})
+                    fetchNewsApiOrg({ keyword: query }),  // Passa o termo de busca para a API
+                    fetchNewsAPI({ keyword: query })     // Passa o termo de busca para a API
                 ]);
 
                 const newsToShow = apiData.map((item) => ({
@@ -49,13 +51,16 @@ const Home = () => {
                 // Extract unique sources from the articles
                 const uniqueSources = [...new Set(combinedArticles.map(article => article.source))];
                 setSources(uniqueSources);
-            } catch (error) {
+            }
+            catch (error) {
                 console.error("Error fetching news:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchNews();
-    }, []);
+        fetchNews(searchQuery); 
+    }, [searchQuery]);
 
     useEffect(() => {
         const filtered = articles.filter(article => {
@@ -66,9 +71,28 @@ const Home = () => {
 
         setFilteredArticles(filtered);
     }, [selectedSource, selectedDate, articles]);
-
     return (
-        <Container maxWidth={false} style={{ width: '100%' }}>
+        <Container maxWidth={false} >
+            {/* Spinner and backdrop */}
+            {loading && (
+                <Backdrop
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 10,
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    open={loading}
+                >
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+            )}
             <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <FormControl fullWidth style={{ flex: 1 }}>
                     <InputLabel id="source-label">Source</InputLabel>

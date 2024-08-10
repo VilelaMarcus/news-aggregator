@@ -4,8 +4,8 @@ import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../theme";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
+import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
+import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -30,7 +30,7 @@ const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [selected, setSelected] = useState("Dashboard");
+  const [selected, setSelected] = useState("All News");
 
   return (
     <Box
@@ -71,7 +71,7 @@ const Sidebar = () => {
                 ml="15px"
               >
                 <Typography variant="h3" color={colors.grey[100]}>
-                  Times
+                  NewsPortal
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
@@ -89,10 +89,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Times News
+                  NewsPortal
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  News 
+                  Stay Informed
                 </Typography>
               </Box>
             </Box>
@@ -100,9 +100,9 @@ const Sidebar = () => {
 
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
-              title="Home"
+              title="All News"
               to="/"
-              icon={<HomeOutlinedIcon />}
+              icon={<NewspaperOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -115,23 +115,12 @@ const Sidebar = () => {
               Bookmarks
             </Typography>
             <Item
-              title="Cliente"
-              to="/customer"
-              icon={<PeopleOutlinedIcon />}
+              title="Bookmarked News"
+              to="/bookmarked"
+              icon={<BookmarkOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            <Box
-              sx={{
-                "& .pro-inner-list-item": {
-                  background: `${colors.primary[400]} !important`,
-                },
-                "& .popper-inner": {
-                  background: `${colors.primary[400]} !important`,
-                },
-              }}
-            >
-            </Box>
           </Box>
         </Menu>
       </ProSidebar>

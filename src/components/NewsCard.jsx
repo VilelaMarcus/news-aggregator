@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardMedia, Typography, Button, IconButton, Tooltip } from '@mui/material';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'; // Import the outlined bookmark icon
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import { styled } from '@mui/system';
 
@@ -44,33 +46,62 @@ const ReadMoreButton = styled(Button)({
   alignSelf: 'flex-start',
 });
 
+const BookmarkButton = styled(IconButton)({
+  alignSelf: 'flex-end',
+});
+
 const NewsCard = ({ article }) => {
   const { url, title, description, urlToImage, author } = article;
+  const [isBookmarked, setIsBookmarked] = useState(() => {
+    // Check if the article is already bookmarked
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+    return bookmarks.some(bookmark => bookmark.url === url);
+  });
 
-  // Default image for cases where urlToImage might be missing
-  const defaultImage = '../../public/default.png';
+  const handleBookmark = () => {
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+    if (isBookmarked) {
+      // Remove the bookmark
+      const newBookmarks = bookmarks.filter(bookmark => bookmark.url !== url);
+      localStorage.setItem('bookmarks', JSON.stringify(newBookmarks));
+      setIsBookmarked(false);
+    } else {
+      // Add the new bookmark
+      bookmarks.push(article);
+      localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+      setIsBookmarked(true);
+    }
+  };
 
   return (
     <CardContainer>
       <Media
-        image={urlToImage || defaultImage} // Use default image if urlToImage is missing
+        image={urlToImage}
         title={title}
       />
       <Content>
         <Title variant="h6">
-          {title || 'No Title Available'}
+          {title}
         </Title>
         <Description variant="body2" color="textSecondary">
-          {description || 'No description available.'}
+          {description}
         </Description>
         <Typography variant="caption" color="textSecondary">
-          {author || 'Unknown Author'}
+          {author}
         </Typography>
-        <Tooltip title="Read More">
-          <IconButton href={url} target="_blank" rel="noopener noreferrer">
-            <ReadMoreIcon />
-          </IconButton>
-        </Tooltip>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
+          <Tooltip title="Read More">
+            <ReadMoreButton href={url} target="_blank" rel="noopener noreferrer" variant="contained" color="primary">
+              Read More
+            </ReadMoreButton>
+          </Tooltip>
+          <Tooltip title="Bookmark">
+            <BookmarkButton onClick={handleBookmark}>
+              {isBookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />} 
+            </BookmarkButton>
+          </Tooltip>
+        </div>
       </Content>
     </CardContainer>
   );

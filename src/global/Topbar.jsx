@@ -13,27 +13,26 @@ const Topbar = ({ onSearch }) => {
   const colorMode = useContext(ColorModeContext);
   const { logout } = useAuth0();
 
-  const [searchInput, setSearchInput] = useState(""); // Estado local para armazenar o valor da pesquisa
+  const [searchInput, setSearchInput] = useState(""); 
 
   const handleInputChange = (event) => {
-    setSearchInput(event.target.value); // Atualiza o valor do input
+    setSearchInput(event.target.value); 
   };
 
   const handleSearch = () => {
     if (searchInput.trim()) {
-      onSearch(searchInput); // Envia o valor da pesquisa quando o botão for clicado ou "Enter" for pressionado
+      onSearch(searchInput); 
     }
   };
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      handleSearch(); // Aciona a busca ao pressionar "Enter"
+      handleSearch();
     }
   };
 
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
-      {/* SEARCH BAR */}
       <Box
         display="flex"
         backgroundColor={colors.primary[400]}
@@ -45,7 +44,7 @@ const Topbar = ({ onSearch }) => {
           value={searchInput}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown} // Captura o evento de pressionar tecla
-          sx={{ ml: 1, flex: 1 }}
+          sx={{ ml: 1, flex: 1, paddingLeft: 2 }}
         />
         <IconButton type="button" onClick={handleSearch} sx={{ p: 1 }}>
           <SearchIcon /> {/* Ícone de lupa */}

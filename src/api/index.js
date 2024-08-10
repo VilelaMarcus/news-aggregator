@@ -3,9 +3,9 @@ import axios from 'axios';
 // Fetch news from the News API ORG
 export const fetchNewsApiOrg = async ({ 
     category = '', 
-    keyword = 'us'
+    keyword
 } = {}) => {
-
+    keyword = keyword || 'us';
     let queryParameters = '';
     if (keyword) {
         queryParameters += `q=${keyword}&`;
