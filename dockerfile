@@ -1,13 +1,32 @@
-# Utiliza a imagem oficial do PostgreSQL
-FROM postgres:latest
+# Etapa 1: Construção da imagem
+FROM node:18-alpine AS build
 
-# Defina variáveis de ambiente
-ENV POSTGRES_USER postgres_user
-ENV POSTGRES_PASSWORD postgres_password
-ENV POSTGRES_DB postgres_db
+# Definindo o diretório de trabalho dentro do contêiner
+WORKDIR /app
 
-# Copia o arquivo de inicialização SQL para criar o banco de dados
-COPY init.sql /docker-entrypoint-initdb.d/
+# Copiando arquivos package.json e package-lock.json
+COPY package*.json ./
 
-# Expõe a porta padrão do PostgreSQL
-EXPOSE 5432
+# Instalando dependências
+RUN npm install
+
+# Copiando todos os arquivos do projeto para o contêiner
+COPY . .
+
+# Compilando o projeto
+RUN npm run build
+
+# Etapa 2: Servindo a aplicação
+FROM nginx:alpine
+
+# Copiando a build da primeira etapa para o diretório do Nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copiando o arquivo de configuração do Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expondo a porta padrão do Nginx
+EXPOSE 80
+
+# Comando para iniciar o Nginx
+CMD ["nginx", "-g", "daemon off;"]

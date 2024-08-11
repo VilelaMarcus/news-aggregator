@@ -1,15 +1,10 @@
-version: '3.8'
-
+version: '3'
 services:
-  postgres:
+  frontend:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '5432:5432'
+      - "3000:80"
     environment:
-      POSTGRES_USER: postgres_user
-      POSTGRES_PASSWORD: postgres_password
-      POSTGRES_DB: postgres_db
-    volumes:
-      - ./data:/var/lib/postgresql/data
+      - NODE_ENV=production
