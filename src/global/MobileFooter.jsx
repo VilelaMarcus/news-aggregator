@@ -2,7 +2,10 @@ import React from "react";
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+
+import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
+import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import { useNavigate } from "react-router-dom";
 
 const MobileFooter = () => {
@@ -15,9 +18,8 @@ const MobileFooter = () => {
         onChange={(event, newValue) => {
             setValue(newValue);
             // Navigate to different routes based on selected value
-            if (newValue === 0) navigate("/");
-            if (newValue === 1) navigate("/search");
-            if (newValue === 2) navigate("/profile");
+            if (newValue === 1) navigate("/");
+            if (newValue === 0) navigate("/bookmarked");
         }}
         style={{
             position: 'fixed',
@@ -27,9 +29,9 @@ const MobileFooter = () => {
             zIndex: 1000, // Ensure it's above other content
         }}
         >
-        <BottomNavigationAction label="Home" icon={<HomeIcon />} />
-        <BottomNavigationAction label="Search" icon={<SearchIcon />} />
-        <BottomNavigationAction label="Profile" icon={<AccountCircleIcon />} />
+
+        <BottomNavigationAction label="BookMarked" icon={<BookmarkOutlinedIcon />} />
+        <BottomNavigationAction label="Home" icon={<NewspaperOutlinedIcon />} />
         </BottomNavigation>
     );
 };

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Grid, FormControl, InputLabel, Select, MenuItem, TextField, CircularProgress, Backdrop  } from '@mui/material';
+import { Container, Grid, FormControl, InputLabel, Select, MenuItem, TextField, CircularProgress, Backdrop, Button } from '@mui/material';
 import NewsCard from '../../components/NewsCard';
 import { fetchNewsAPI, fetchNewsApiOrg } from '../../api';
 
@@ -10,6 +10,8 @@ const Home = ({ searchQuery }) => {
     const [selectedSource, setSelectedSource] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
     const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const articlesPerPage = 20; // Defina o número de artigos por página
 
     useEffect(() => {
         setLoading(true);
@@ -41,9 +43,10 @@ const Home = ({ searchQuery }) => {
                 }));
 
                 // Combine the articles and sort by dateTime
-                const combinedArticles = [...apiOrgDataToShow, ...newsToShow].sort(
-                    (a, b) => new Date(b.dateTime) - new Date(a.dateTime)
-                );
+                const combinedArticles = [...apiOrgDataToShow, ...newsToShow]
+                    .filter((article, index, self) =>
+                        index === self.findIndex(a => a.title === article.title))
+                    .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
 
                 setArticles(combinedArticles);
                 setFilteredArticles(combinedArticles);
@@ -70,9 +73,15 @@ const Home = ({ searchQuery }) => {
         });
 
         setFilteredArticles(filtered);
+        setCurrentPage(1);
     }, [selectedSource, selectedDate, articles]);
+
+    const indexOfLastArticle = currentPage * articlesPerPage;
+    const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+    const currentArticles = filteredArticles.slice(indexOfFirstArticle, indexOfLastArticle);
+
     return (
-        <Container maxWidth={false} >
+        <Container maxWidth={false}>
             {/* Spinner and backdrop */}
             {loading && (
                 <Backdrop
@@ -121,12 +130,31 @@ const Home = ({ searchQuery }) => {
             </div>
 
             <Grid container spacing={2}>
-                {filteredArticles.map((article, index) => (
+                {currentArticles.map((article, index) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                         <NewsCard article={article} />
                     </Grid>
                 ))}
             </Grid>
+
+            <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={() => setCurrentPage(prev => prev - 1)} 
+                    disabled={currentPage === 1}
+                >
+                    Previous
+                </Button>
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={() => setCurrentPage(prev => prev + 1)} 
+                    disabled={currentPage === Math.ceil(filteredArticles.length / articlesPerPage)}
+                >
+                    Next
+                </Button>
+            </div>
         </Container>
     );
 };
