@@ -18,8 +18,8 @@ const MobileFooter = () => {
         onChange={(event, newValue) => {
             setValue(newValue);
             // Navigate to different routes based on selected value
-            if (newValue === 1) navigate("/");
-            if (newValue === 0) navigate("/bookmarked");
+            if (newValue === 0) navigate("/");
+            if (newValue === 1) navigate("/bookmarked");
         }}
         style={{
             position: 'fixed',
@@ -29,9 +29,9 @@ const MobileFooter = () => {
             zIndex: 1000, // Ensure it's above other content
         }}
         >
+        <BottomNavigationAction label="Home" icon={<NewspaperOutlinedIcon />} />
 
         <BottomNavigationAction label="BookMarked" icon={<BookmarkOutlinedIcon />} />
-        <BottomNavigationAction label="Home" icon={<NewspaperOutlinedIcon />} />
         </BottomNavigation>
     );
 };

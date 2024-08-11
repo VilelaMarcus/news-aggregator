@@ -1,29 +1,48 @@
 import axios from 'axios';
 
-// Fetch news from the News API ORG
-export const fetchNewsApiOrg = async ({ 
-    category = '', 
-    keyword
-} = {}) => {
-    keyword = keyword || 'us';
+const buildQueryUrl = (baseUrl, apiKeyParam, apiKey, params = {}) => {
     let queryParameters = '';
-    if (keyword) {
-        queryParameters += `q=${keyword}&`;
+    for (const [key, value] of Object.entries(params)) {
+        if (value) {
+            queryParameters += `${key}=${value}&`;
+        }
     }
-    if (category) {
-        queryParameters += `category=${category}&`;
-    }
+    return `${baseUrl}?${queryParameters}${apiKeyParam}=${apiKey}`;
+};
 
+const fetchFromApi = async (baseUrl, apiKeyParam, apiKey, params) => {
     try {
-        const { data } = await axios.get(`https://newsapi.org/v2/everything?${queryParameters}apiKey=${import.meta.env.VITE_NEWS_API_ORG_KEYS}`);
-        return data.articles;
+        const url = buildQueryUrl(baseUrl, apiKeyParam, apiKey, params);
+        const { data } = await axios.get(url);
+        return data.articles || data.response.docs;
     } catch (error) {
-        console.error('Error fetching news from NewsAPI.org:', error);
-        throw error; // Re-throw the error for handling at the call site
+        console.error('Error fetching data:', error);
+        throw error;
     }
 };
 
-// Fetch news from the News API
+export const fetchNewsApiOrg = async ({ category = '', keyword = '' } = {}) => {
+    const baseUrl = 'https://newsapi.org/v2/everything';
+    const apiKeyParam = 'apiKey';
+    const apiKey = import.meta.env.VITE_NEWS_API_ORG_KEYS;
+    const params = {
+        q: keyword || 'us',
+        category
+    };
+    return await fetchFromApi(baseUrl, apiKeyParam, apiKey, params);
+};
+
+export const fetchNewYorkTimes = async ({ keyword = '', category = '' } = {}) => {
+    const baseUrl = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
+    const apiKeyParam = 'api-key';
+    const apiKey = import.meta.env.VITE_NEW_YORK_TIMES_API_KEY;
+    const params = {
+        q: keyword || 'us',
+        category
+    };
+    return await fetchFromApi(baseUrl, apiKeyParam, apiKey, params);
+};
+
 export const fetchNewsAPI = async ({ 
     locationUri = 'United_States',
     category = '', 
@@ -69,6 +88,6 @@ export const fetchNewsAPI = async ({
         return response.data.articles.results;
     } catch (error) {
         console.error('Error fetching news from NewsAPI:', error);
-        throw error; // Re-throw the error for handling at the call site
+        throw error;
     }
 };

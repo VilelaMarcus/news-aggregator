@@ -79,10 +79,12 @@ const NewsCard = ({ article }) => {
     }
   };
 
+  const defaultImage = '../../public/default.png';
+
   return (
     <CardContainer>
       <Media
-        image={urlToImage}
+        image={urlToImage || defaultImage}
         title={title}
       />
       <Content>

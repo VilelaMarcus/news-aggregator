@@ -2,14 +2,18 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Container, Grid, FormControl, InputLabel, Select, MenuItem, TextField, CircularProgress, Backdrop, Button } from '@mui/material';
 import NewsCard from '../../components/NewsCard';
-import { fetchNewsAPI, fetchNewsApiOrg } from '../../api';
+import { fetchNewsAPI, fetchNewsApiOrg, fetchNewYorkTimes } from '../../api';
 
-// Função para buscar notícias
 const fetchNews = async (query) => {
-    const [apiOrgData, apiData] = await Promise.all([
+    const results = await Promise.allSettled([
         fetchNewsApiOrg({ keyword: query }),
-        fetchNewsAPI({ keyword: query })
+        fetchNewsAPI({ keyword: query }),
+        fetchNewYorkTimes({ keyword: query })
     ]);
+
+    const apiOrgData = results[0].status === 'fulfilled' ? results[0].value : [];
+    const apiData = results[1].status === 'fulfilled' ? results[1].value : [];
+    const newYorkTimesData = results[2].status === 'fulfilled' ? results[2].value : [];
 
     const newsToShow = apiData.map((item) => ({
         title: item.title,
@@ -31,7 +35,17 @@ const fetchNews = async (query) => {
         source: item.source.name
     }));
 
-    return [...apiOrgDataToShow, ...newsToShow]
+    const newYorkTimesDataToShow = newYorkTimesData.map((item) => ({
+        title: item.headline.main,
+        description: item.abstract,
+        author: item.byline.original,
+        urlToImage: item.multimedia.length ? `https://www.nytimes.com/${item.multimedia[0].url}` : "",
+        url: item.web_url,
+        dateTime: item.pub_date,
+        source: item.source
+    }));
+
+    return [...apiOrgDataToShow, ...newsToShow, ...newYorkTimesDataToShow]
         .filter((article, index, self) =>
             index === self.findIndex(a => a.title === article.title))
         .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
