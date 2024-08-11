@@ -4,8 +4,8 @@ import { ColorModeContext, tokens } from "../theme";
 import { useAuth0 } from "@auth0/auth0-react";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import SearchIcon from "@mui/icons-material/Search"; // Ícone de lupa para busca
+import SearchIcon from "@mui/icons-material/Search";
+import { Settings } from "@mui/icons-material";
 
 const Topbar = ({ onSearch }) => {
   const theme = useTheme();
@@ -62,9 +62,9 @@ const Topbar = ({ onSearch }) => {
             )}
           </IconButton>
         </Tooltip>
-        <Tooltip title="Log out" arrow>
+        <Tooltip title="Change preffered" arrow>
           <IconButton onClick={logout}>
-            <PersonOutlinedIcon />
+            <Settings />
           </IconButton>
         </Tooltip>
       </Box>

@@ -1,11 +1,7 @@
 import React from "react";
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import SearchIcon from "@mui/icons-material/Search";
-
 import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
 import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import { useNavigate } from "react-router-dom";
 
 const MobileFooter = () => {
