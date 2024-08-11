@@ -22,7 +22,7 @@ const fetchNews = async (query) => {
         urlToImage: item.image,
         url: item.url,
         dateTime: item.dateTime,
-        source: item.source.title
+        source: 'News API'
     }));
 
     const apiOrgDataToShow = apiOrgData.map((item) => ({
@@ -32,7 +32,7 @@ const fetchNews = async (query) => {
         urlToImage: item.urlToImage,
         url: item.url,
         dateTime: item.dateTime || item.publishedAt,
-        source: item.source.name
+        source: 'API Org'
     }));
 
     const newYorkTimesDataToShow = newYorkTimesData.map((item) => ({
@@ -42,7 +42,7 @@ const fetchNews = async (query) => {
         urlToImage: item.multimedia.length ? `https://www.nytimes.com/${item.multimedia[0].url}` : "",
         url: item.web_url,
         dateTime: item.pub_date,
-        source: item.source
+        source: 'New York Times'
     }));
 
     return [...apiOrgDataToShow, ...newsToShow, ...newYorkTimesDataToShow]
@@ -60,13 +60,13 @@ const Home = ({ searchQuery }) => {
     const { data: articles = [], isLoading } = useQuery({
         queryKey: ['news', searchQuery],
         queryFn: () => fetchNews(searchQuery),
-        keepPreviousData: true // Mantém os dados antigos enquanto novos são carregados
+        keepPreviousData: true
     });
 
     // Filtro e paginação
     const filteredArticles = useMemo(() => {
         const filtered = articles.filter(article => {
-            const matchesSource = selectedSource ? (article.source || "").includes(selectedSource) : true;
+            const matchesSource = selectedSource ? article.source === selectedSource : true;
             const matchesDate = selectedDate ? new Date(article.dateTime).toDateString() === new Date(selectedDate).toDateString() : true;
             return matchesSource && matchesDate;
         });
@@ -109,10 +109,9 @@ const Home = ({ searchQuery }) => {
                         displayEmpty
                     >
                         <MenuItem value="">All Sources</MenuItem>
-                        {Array.from(new Set(articles.map(article => article.source)))
-                            .map((source, index) => (
-                                <MenuItem key={index} value={source}>{source}</MenuItem>
-                            ))}
+                        <MenuItem value="API Org">API Org</MenuItem>
+                        <MenuItem value="News API">News API</MenuItem>
+                        <MenuItem value="New York Times">New York Times</MenuItem>
                     </Select>
                 </FormControl>
 
