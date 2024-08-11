@@ -1,80 +1,64 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Container, Grid, FormControl, InputLabel, Select, MenuItem, TextField, CircularProgress, Backdrop, Button } from '@mui/material';
 import NewsCard from '../../components/NewsCard';
 import { fetchNewsAPI, fetchNewsApiOrg } from '../../api';
 
+// Função para buscar notícias
+const fetchNews = async (query) => {
+    const [apiOrgData, apiData] = await Promise.all([
+        fetchNewsApiOrg({ keyword: query }),
+        fetchNewsAPI({ keyword: query })
+    ]);
+
+    const newsToShow = apiData.map((item) => ({
+        title: item.title,
+        description: item.body,
+        author: item.authors ? item.authors.map(author => author.name).join(", ") : "Unknown",
+        urlToImage: item.image,
+        url: item.url,
+        dateTime: item.dateTime,
+        source: item.source.title
+    }));
+
+    const apiOrgDataToShow = apiOrgData.map((item) => ({
+        title: item.title,
+        description: item.description,
+        author: item.author,
+        urlToImage: item.urlToImage,
+        url: item.url,
+        dateTime: item.dateTime || item.publishedAt,
+        source: item.source.name
+    }));
+
+    return [...apiOrgDataToShow, ...newsToShow]
+        .filter((article, index, self) =>
+            index === self.findIndex(a => a.title === article.title))
+        .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+};
+
 const Home = ({ searchQuery }) => {
-    const [articles, setArticles] = useState([]);
-    const [filteredArticles, setFilteredArticles] = useState([]);
-    const [sources, setSources] = useState([]);
     const [selectedSource, setSelectedSource] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
-    const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const articlesPerPage = 20; // Defina o número de artigos por página
+    const articlesPerPage = 24;
 
-    useEffect(() => {
-        setLoading(true);
-        const fetchNews = async (query) => {
-            try {
-                const [apiOrgData, apiData] = await Promise.all([
-                    fetchNewsApiOrg({ keyword: query }),  // Passa o termo de busca para a API
-                    fetchNewsAPI({ keyword: query })     // Passa o termo de busca para a API
-                ]);
+    const { data: articles = [], isLoading } = useQuery({
+        queryKey: ['news', searchQuery],
+        queryFn: () => fetchNews(searchQuery),
+        keepPreviousData: true // Mantém os dados antigos enquanto novos são carregados
+    });
 
-                const newsToShow = apiData.map((item) => ({
-                    title: item.title,
-                    description: item.body,
-                    author: item.authors ? item.authors.map(author => author.name).join(", ") : "Unknown",
-                    urlToImage: item.image,
-                    url: item.url,
-                    dateTime: item.dateTime,
-                    source: item.source.title
-                }));
-
-                const apiOrgDataToShow = apiOrgData.map((item) => ({
-                    title: item.title,
-                    description: item.description,
-                    author: item.author,
-                    urlToImage: item.urlToImage,
-                    url: item.url,
-                    dateTime: item.dateTime || item.publishedAt,
-                    source: item.source.name
-                }));
-
-                // Combine the articles and sort by dateTime
-                const combinedArticles = [...apiOrgDataToShow, ...newsToShow]
-                    .filter((article, index, self) =>
-                        index === self.findIndex(a => a.title === article.title))
-                    .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
-
-                setArticles(combinedArticles);
-                setFilteredArticles(combinedArticles);
-
-                // Extract unique sources from the articles
-                const uniqueSources = [...new Set(combinedArticles.map(article => article.source))];
-                setSources(uniqueSources);
-            }
-            catch (error) {
-                console.error("Error fetching news:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchNews(searchQuery); 
-    }, [searchQuery]);
-
-    useEffect(() => {
+    // Filtro e paginação
+    const filteredArticles = useMemo(() => {
         const filtered = articles.filter(article => {
             const matchesSource = selectedSource ? (article.source || "").includes(selectedSource) : true;
             const matchesDate = selectedDate ? new Date(article.dateTime).toDateString() === new Date(selectedDate).toDateString() : true;
             return matchesSource && matchesDate;
         });
 
-        setFilteredArticles(filtered);
-        setCurrentPage(1);
-    }, [selectedSource, selectedDate, articles]);
+        return filtered;
+    }, [articles, selectedSource, selectedDate]);
 
     const indexOfLastArticle = currentPage * articlesPerPage;
     const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
@@ -82,8 +66,7 @@ const Home = ({ searchQuery }) => {
 
     return (
         <Container maxWidth={false}>
-            {/* Spinner and backdrop */}
-            {loading && (
+            {isLoading && (
                 <Backdrop
                     style={{
                         position: 'absolute',
@@ -97,7 +80,7 @@ const Home = ({ searchQuery }) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
-                    open={loading}
+                    open={isLoading}
                 >
                     <CircularProgress color="inherit" />
                 </Backdrop>
@@ -112,9 +95,10 @@ const Home = ({ searchQuery }) => {
                         displayEmpty
                     >
                         <MenuItem value="">All Sources</MenuItem>
-                        {sources.map((source, index) => (
-                            <MenuItem key={index} value={source}>{source}</MenuItem>
-                        ))}
+                        {Array.from(new Set(articles.map(article => article.source)))
+                            .map((source, index) => (
+                                <MenuItem key={index} value={source}>{source}</MenuItem>
+                            ))}
                     </Select>
                 </FormControl>
 

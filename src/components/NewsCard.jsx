@@ -31,6 +31,11 @@ const Title = styled(Typography)({
   fontSize: '1.2rem',
   fontWeight: 'bold',
   marginBottom: '8px',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  display: '-webkit-box',
+  WebkitLineClamp: 3, // Number of lines before truncation
+  WebkitBoxOrient: 'vertical',
 });
 
 const Description = styled(Typography)({
@@ -88,7 +93,7 @@ const NewsCard = ({ article }) => {
           {description}
         </Description>
         <Typography variant="caption" color="textSecondary">
-          {author}
+          Author: {author || 'Unknown'}
         </Typography>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
           <Tooltip title="Read More">
