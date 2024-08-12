@@ -13,7 +13,6 @@ const MobileFooter = () => {
         value={value}
         onChange={(event, newValue) => {
             setValue(newValue);
-            // Navigate to different routes based on selected value
             if (newValue === 0) navigate("/");
             if (newValue === 1) navigate("/bookmarked");
         }}

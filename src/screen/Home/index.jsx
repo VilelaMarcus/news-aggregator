@@ -4,11 +4,16 @@ import { Container, Grid, FormControl, InputLabel, Select, MenuItem, TextField, 
 import NewsCard from '../../components/NewsCard';
 import { fetchNewsAPI, fetchNewsApiOrg, fetchNewYorkTimes } from '../../api';
 
-const fetchNews = async (query) => {
+const CATEGORIES = [
+    "Health", "Science", "Arts", "Business", "Sports", "Technology", "World", "Politics",
+    "Entertainment", "Opinion", "Travel", "Food", "Computers", "Video Games", "Books"
+];
+
+const fetchNews = async (query, category = '') => {
     const results = await Promise.allSettled([
-        fetchNewsApiOrg({ keyword: query }),
-        fetchNewsAPI({ keyword: query }),
-        fetchNewYorkTimes({ keyword: query })
+        fetchNewsApiOrg({ keyword: query, category }),
+        fetchNewsAPI({ keyword: query, category }),
+        fetchNewYorkTimes({ keyword: query, category })
     ]);
 
     const apiOrgData = results[0].status === 'fulfilled' ? results[0].value : [];
@@ -53,15 +58,23 @@ const fetchNews = async (query) => {
 
 const Home = ({ searchQuery }) => {
     const [selectedSource, setSelectedSource] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const articlesPerPage = 24;
 
-    const { data: articles = [], isLoading } = useQuery({
-        queryKey: ['news', searchQuery],
-        queryFn: () => fetchNews(searchQuery),
+    const { data: articles = [], isLoading, refetch } = useQuery({
+        queryKey: ['news', searchQuery, selectedCategory],
+        queryFn: () => fetchNews(searchQuery, selectedCategory),
         keepPreviousData: true
     });
+
+    // Requisição ao mudar categoria
+    const handleCategoryChange = (event) => {
+        setSelectedCategory(event.target.value);
+        setCurrentPage(1);
+        refetch(); // Requisição de nova busca
+    };
 
     // Filtro e paginação
     const filteredArticles = useMemo(() => {
@@ -101,7 +114,7 @@ const Home = ({ searchQuery }) => {
             )}
             <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <FormControl fullWidth style={{ flex: 1 }}>
-                    <InputLabel id="source-label">Source</InputLabel>
+                    <InputLabel id="source-label" shrink>Source</InputLabel>
                     <Select
                         labelId="source-label"
                         value={selectedSource}
@@ -114,7 +127,26 @@ const Home = ({ searchQuery }) => {
                         <MenuItem value="New York Times">New York Times</MenuItem>
                     </Select>
                 </FormControl>
-
+                <FormControl fullWidth style={{ flex: 1 }}>
+                    <InputLabel id="category-label" shrink>Category</InputLabel>
+                    <Select
+                        labelId="category-label"
+                        value={selectedCategory}
+                        onChange={handleCategoryChange}
+                        displayEmpty
+                        label="Category"
+                        defaultValue=""
+                    >
+                        <MenuItem value="">
+                            <em>All Categories</em>
+                        </MenuItem>
+                        {CATEGORIES.map((category) => (
+                            <MenuItem key={category} value={category}>
+                                {category}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 <TextField
                     type="date"
                     label="Date"
