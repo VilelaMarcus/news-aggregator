@@ -56,6 +56,19 @@ const fetchNews = async (query, category = '') => {
         .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
 };
 
+const getPreferences = () => {
+    const source = localStorage.getItem('preferredSource') || '';
+    const category = localStorage.getItem('preferredCategory') || '';
+    const author = localStorage.getItem('preferredAuthor') || '';
+    return { source, category, author };
+};
+
+const savePreferences = (source, category, author) => {
+    localStorage.setItem('preferredSource', source);
+    localStorage.setItem('preferredCategory', category);
+    localStorage.setItem('preferredAuthor', author);
+};
+
 const Home = ({ searchQuery }) => {
     const [selectedSource, setSelectedSource] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -63,29 +76,26 @@ const Home = ({ searchQuery }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const articlesPerPage = 24;
 
-    const { data: articles = [], isLoading, refetch } = useQuery({
-        queryKey: ['news', searchQuery, selectedCategory],
-        queryFn: () => fetchNews(searchQuery, selectedCategory),
+    const { data: articles = [], isLoading } = useQuery({
+        queryKey: ['news', searchQuery],
+        queryFn: () => fetchNews(searchQuery),
         keepPreviousData: true
     });
 
-    // Requisição ao mudar categoria
-    const handleCategoryChange = (event) => {
-        setSelectedCategory(event.target.value);
-        setCurrentPage(1);
-        refetch(); // Requisição de nova busca
-    };
-
-    // Filtro e paginação
     const filteredArticles = useMemo(() => {
+        const { source: preferredSource, category: preferredCategory, author: preferredAuthor } = getPreferences();
+        
         const filtered = articles.filter(article => {
-            const matchesSource = selectedSource ? article.source === selectedSource : true;
+            const matchesSource = preferredSource ? article.source === preferredSource : true;
+            const matchesCategory = preferredCategory ? article.category === preferredCategory : true;
+            const matchesAuthor = preferredAuthor ? article.author === preferredAuthor : true;
             const matchesDate = selectedDate ? new Date(article.dateTime).toDateString() === new Date(selectedDate).toDateString() : true;
-            return matchesSource && matchesDate;
+
+            return matchesSource && matchesCategory && matchesAuthor && matchesDate;
         });
 
         return filtered;
-    }, [articles, selectedSource, selectedDate]);
+    }, [articles, selectedDate]);
 
     const indexOfLastArticle = currentPage * articlesPerPage;
     const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
@@ -120,6 +130,7 @@ const Home = ({ searchQuery }) => {
                         value={selectedSource}
                         onChange={(e) => setSelectedSource(e.target.value)}
                         displayEmpty
+                        label="Source"
                     >
                         <MenuItem value="">All Sources</MenuItem>
                         <MenuItem value="API Org">API Org</MenuItem>
@@ -132,10 +143,9 @@ const Home = ({ searchQuery }) => {
                     <Select
                         labelId="category-label"
                         value={selectedCategory}
-                        onChange={handleCategoryChange}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
                         displayEmpty
                         label="Category"
-                        defaultValue=""
                     >
                         <MenuItem value="">
                             <em>All Categories</em>

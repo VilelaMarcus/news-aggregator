@@ -21,7 +21,7 @@ const MobileFooter = () => {
             bottom: 0,
             left: 0,
             right: 0,
-            zIndex: 1000, // Ensure it's above other content
+            zIndex: 1000,
         }}
         >
         <BottomNavigationAction label="Home" icon={<NewspaperOutlinedIcon />} />
