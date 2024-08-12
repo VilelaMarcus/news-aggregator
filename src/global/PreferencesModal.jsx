@@ -1,27 +1,19 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
     Modal,
     Box,
     Typography,
-    TextField,
     FormControl,
     InputLabel,
     Select,
     MenuItem,
     Button
 } from '@mui/material';
-
-const CATEGORIES = [
-    "Health", "Science", "Arts", "Business", "Sports", "Technology", "World", "Politics",
-    "Entertainment", "Opinion", "Travel", "Food", "Computers", "Video Games", "Books"
-];
-
-const SOURCES = ["API Org", "News API", "New York Times"];
+import { CATEGORIES, SOURCES } from './constants';
 
 const ModalPreferences = ({ open, handleClose }) => {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedSources, setSelectedSources] = useState([]);
-    const [selectedAuthors, setSelectedAuthors] = useState([]);
 
     const handleCategoryChange = (event) => {
         setSelectedCategories(event.target.value);
@@ -31,16 +23,10 @@ const ModalPreferences = ({ open, handleClose }) => {
         setSelectedSources(event.target.value);
     };
 
-    const handleAuthorChange = (event) => {
-        setSelectedAuthors(event.target.value);
-    };
-
     const handleSave = () => {
-        // Salve as preferências no local storage ou onde preferir
         localStorage.setItem('categories', JSON.stringify(selectedCategories));
         localStorage.setItem('sources', JSON.stringify(selectedSources));
-        localStorage.setItem('authors', JSON.stringify(selectedAuthors));
-        handleClose(); // Fecha o modal após salvar
+        handleClose();
     };
 
     return (
@@ -56,14 +42,14 @@ const ModalPreferences = ({ open, handleClose }) => {
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    width: '80%', // Ajuste a largura conforme necessário
+                    width: '80%',
                     maxWidth: '800px',
                     bgcolor: 'background.paper',
                     borderRadius: '8px',
                     boxShadow: 24,
                     p: 4,
-                    color: 'white', // Fonte branca
-                    backgroundColor: '#333', // Cor de fundo escura
+                    color: 'white',
+                    backgroundColor: '#333',
                 }}
             >
                 <Typography id="modal-title" variant="h6" component="h2">

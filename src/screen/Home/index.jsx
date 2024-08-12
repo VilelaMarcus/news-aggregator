@@ -1,13 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Container, Grid, FormControl, InputLabel, Select, MenuItem, TextField, CircularProgress, Backdrop, Button } from '@mui/material';
 import NewsCard from '../../components/NewsCard';
 import { fetchNewsAPI, fetchNewsApiOrg, fetchNewYorkTimes } from '../../api';
-
-const CATEGORIES = [
-    "Health", "Science", "Arts", "Business", "Sports", "Technology", "World", "Politics",
-    "Entertainment", "Opinion", "Travel", "Food", "Computers", "Video Games", "Books"
-];
+import { CATEGORIES, SOURCES } from '../../global/constants';
 
 const fetchNews = async (query, category = '') => {
     const results = await Promise.allSettled([
@@ -61,12 +57,6 @@ const getPreferences = () => {
     const category = localStorage.getItem('preferredCategory') || '';
     const author = localStorage.getItem('preferredAuthor') || '';
     return { source, category, author };
-};
-
-const savePreferences = (source, category, author) => {
-    localStorage.setItem('preferredSource', source);
-    localStorage.setItem('preferredCategory', category);
-    localStorage.setItem('preferredAuthor', author);
 };
 
 const Home = ({ searchQuery }) => {
@@ -133,9 +123,11 @@ const Home = ({ searchQuery }) => {
                         label="Source"
                     >
                         <MenuItem value="">All Sources</MenuItem>
-                        <MenuItem value="API Org">API Org</MenuItem>
-                        <MenuItem value="News API">News API</MenuItem>
-                        <MenuItem value="New York Times">New York Times</MenuItem>
+                        {SOURCES.map((source) => (
+                        <MenuItem key={source} value={source}>
+                            {source}
+                        </MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
                 <FormControl fullWidth style={{ flex: 1 }}>
