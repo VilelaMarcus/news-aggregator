@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardMedia, Typography, Button, IconButton, Tooltip } from '@mui/material';
+import React, { useState, useCallback } from 'react';
+import { Card, CardContent, CardMedia, Typography, Button, IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'; // Import the outlined bookmark icon
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
@@ -34,7 +34,7 @@ const Title = styled(Typography)({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   display: '-webkit-box',
-  WebkitLineClamp: 3, // Number of lines before truncation
+  WebkitLineClamp: 3, 
   WebkitBoxOrient: 'vertical',
 });
 
@@ -42,7 +42,7 @@ const Description = styled(Typography)({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   display: '-webkit-box',
-  WebkitLineClamp: 3, // Number of lines before truncation
+  WebkitLineClamp: 3,
   WebkitBoxOrient: 'vertical',
   marginBottom: '16px',
 });
@@ -62,6 +62,9 @@ const NewsCard = ({ article }) => {
     const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
     return bookmarks.some(bookmark => bookmark.url === url);
   });
+  
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleBookmark = () => {
     const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
@@ -79,6 +82,26 @@ const NewsCard = ({ article }) => {
     }
   };
 
+  const handleContextMenu = (event) => {
+    event.preventDefault(); // Prevent the default context menu
+    setAnchorEl(event.currentTarget);
+    setMenuOpen(true);
+  };
+
+  const handleCloseMenu = () => {
+    setMenuOpen(false);
+    setAnchorEl(null);
+  };
+
+  const handleAddToFavorites = () => {
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    if (!favorites.some(favorite => favorite === author)) {
+      favorites.push(author);
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+    handleCloseMenu();
+  };
+
   const defaultImage = '../../public/default.png';
 
   return (
@@ -94,7 +117,11 @@ const NewsCard = ({ article }) => {
         <Description variant="body2" color="textSecondary">
           {description}
         </Description>
-        <Typography variant="caption" color="textSecondary">
+        <Typography
+          variant="caption"
+          color="textSecondary"
+          onContextMenu={handleContextMenu} // Add context menu handler
+        >
           Author: {author || 'Unknown'}
         </Typography>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
@@ -110,6 +137,13 @@ const NewsCard = ({ article }) => {
           </Tooltip>
         </div>
       </Content>
+      <Menu
+        anchorEl={anchorEl}
+        open={menuOpen}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem onClick={handleAddToFavorites}>Add to Favorites</MenuItem>
+      </Menu>
     </CardContainer>
   );
 };

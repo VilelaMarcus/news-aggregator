@@ -5,7 +5,7 @@ import NewsCard from '../../components/NewsCard';
 import { fetchNewsAPI, fetchNewsApiOrg, fetchNewYorkTimes } from '../../api';
 import { CATEGORIES, SOURCES } from '../../global/constants';
 
-const fetchNews = async (query, category = '') => {
+const fetchNews = async (query, category) => {
     const results = await Promise.allSettled([
         fetchNewsApiOrg({ keyword: query, category }),
         fetchNewsAPI({ keyword: query, category }),
@@ -66,26 +66,30 @@ const Home = ({ searchQuery }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const articlesPerPage = 24;
 
+    // Fetch news data
     const { data: articles = [], isLoading } = useQuery({
-        queryKey: ['news', searchQuery],
-        queryFn: () => fetchNews(searchQuery),
-        keepPreviousData: true
+        queryKey: ['news', searchQuery, selectedCategory],
+        queryFn: () => fetchNews(searchQuery, selectedCategory),
+        keepPreviousData: true,
+        refetchOnWindowFocus: false
     });
 
+    // Get saved preferences
+    const preferences = getPreferences();
+
+    // Apply filters based on preferences
     const filteredArticles = useMemo(() => {
-        const { source: preferredSource, category: preferredCategory, author: preferredAuthor } = getPreferences();
-        
         const filtered = articles.filter(article => {
-            const matchesSource = preferredSource ? article.source === preferredSource : true;
-            const matchesCategory = preferredCategory ? article.category === preferredCategory : true;
-            const matchesAuthor = preferredAuthor ? article.author === preferredAuthor : true;
+            const matchesSource = selectedSource ? article.source === selectedSource : true;
+            const matchesCategory = preferences.category ? article.category === preferences.category : true;
+            const matchesAuthor = preferences.author ? article.author === preferences.author : true;
             const matchesDate = selectedDate ? new Date(article.dateTime).toDateString() === new Date(selectedDate).toDateString() : true;
 
             return matchesSource && matchesCategory && matchesAuthor && matchesDate;
         });
 
         return filtered;
-    }, [articles, selectedDate]);
+    }, [articles, preferences, selectedDate, selectedSource]);
 
     const indexOfLastArticle = currentPage * articlesPerPage;
     const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;

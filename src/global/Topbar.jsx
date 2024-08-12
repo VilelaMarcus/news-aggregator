@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, IconButton, useTheme, Tooltip, InputBase } from '@mui/material';
 import { ColorModeContext, tokens } from '../theme';
-import { useAuth0 } from '@auth0/auth0-react';
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import SearchIcon from '@mui/icons-material/Search';
@@ -12,7 +11,6 @@ const Topbar = ({ onSearch }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const colorMode = React.useContext(ColorModeContext);
-    const { logout } = useAuth0();
 
     const [searchInput, setSearchInput] = useState('');
     const [openModal, setOpenModal] = useState(false); // Controle do modal
