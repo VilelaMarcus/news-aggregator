@@ -25,9 +25,11 @@ export const fetchNewsApiOrg = async ({ category = '', keyword = '' } = {}) => {
     const baseUrl = 'https://newsapi.org/v2/everything';
     const apiKeyParam = 'apiKey';
     const apiKey = import.meta.env.VITE_NEWS_API_ORG_KEYS;
+    if(category && keyword === ''){
+        keyword = category;
+    }
     const params = {
-        q: keyword || 'us',
-        category
+        q: keyword || 'us'
     };
     return await fetchFromApi(baseUrl, apiKeyParam, apiKey, params);
 };
@@ -36,9 +38,11 @@ export const fetchNewYorkTimes = async ({ keyword = '', category = '' } = {}) =>
     const baseUrl = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
     const apiKeyParam = 'api-key';
     const apiKey = import.meta.env.VITE_NEW_YORK_TIMES_API_KEY;
+    if(category && keyword === ''){
+        keyword = category;
+    }
     const params = {
-        q: keyword || 'us',
-        category
+        q: keyword || 'us'
     };
     return await fetchFromApi(baseUrl, apiKeyParam, apiKey, params);
 };

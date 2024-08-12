@@ -88,6 +88,11 @@ const ModalPreferences = ({ open, handleClose }) => {
                             ))}
                         </Select>
                     </FormControl>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 2 }}>
+                        <Typography>
+                            <strong>Note:</strong> To set a preferred author, you can right-click on the author's name in the news card.
+                        </Typography>
+                    </Box>
                     <Button variant="contained" color="primary" onClick={handleSave}>
                         Save
                     </Button>

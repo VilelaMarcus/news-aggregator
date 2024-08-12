@@ -1,6 +1,6 @@
 export const CATEGORIES = [
-    "Health", "Science", "Arts", "Business", "Sports", "Technology", "World", "Politics",
-    "Entertainment", "Opinion", "Travel", "Food", "Computers", "Video Games", "Books"
+    "Arts", "Business", "Computers", "Games", "Sports", "Health", "Recreation", "Science",
+    "Shopping", "Society"
 ];
 
 export const SOURCES = ["API Org", "News API", "New York Times"];
