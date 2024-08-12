@@ -64,7 +64,6 @@ const Home = ({ searchQuery }) => {
     const [selectedDate, setSelectedDate] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const articlesPerPage = 24;
-    const selectedAuthor = localStorage.getItem('preferredAuthors');
 
     const { data: articles = [], isLoading } = useQuery({
         queryKey: ['news', searchQuery, selectedCategory],
