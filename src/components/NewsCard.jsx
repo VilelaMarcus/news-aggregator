@@ -94,10 +94,10 @@ const NewsCard = ({ article }) => {
   };
 
   const handleAddToFavorites = () => {
-    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    const favorites = JSON.parse(localStorage.getItem('preferredAuthors')) || [];
     if (!favorites.some(favorite => favorite === author)) {
       favorites.push(author);
-      localStorage.setItem('favorites', JSON.stringify(favorites));
+      localStorage.setItem('preferredAuthors', JSON.stringify(favorites));
     }
     handleCloseMenu();
   };

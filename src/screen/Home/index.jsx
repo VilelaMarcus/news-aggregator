@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Container, Grid, FormControl, InputLabel, Select, MenuItem, TextField, CircularProgress, Backdrop, Button } from '@mui/material';
 import NewsCard from '../../components/NewsCard';
@@ -52,20 +52,19 @@ const fetchNews = async (query, category) => {
         .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
 };
 
-const getPreferences = () => {
-    const source = localStorage.getItem('preferredSource') || '';
-    const category = JSON.parse(localStorage.getItem('preferredCategories')) || '';
-    const author = JSON.parse(localStorage.getItem('preferredAuthors')) || '';
-    return { source, category, author };
-};
-
 const Home = ({ searchQuery }) => {
-    const [selectedSource, setSelectedSource] = useState(localStorage.getItem('preferredSource') || '');
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedSource, setSelectedSource] = useState(() => {
+        const savedSource = localStorage.getItem('preferredSource');
+        return savedSource !== null && savedSource !== undefined ? savedSource : '';
+    });
+    const [selectedCategory, setSelectedCategory] = useState(() => {
+        const savedCategory = JSON.parse(localStorage.getItem('preferredCategories'));
+        return savedCategory !== null && savedCategory !== undefined ? savedCategory : '';
+    });
     const [selectedDate, setSelectedDate] = useState('');
-    const [preferences, setPreferences] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const articlesPerPage = 24;
+    const selectedAuthor = localStorage.getItem('preferredAuthors');
 
     const { data: articles = [], isLoading } = useQuery({
         queryKey: ['news', searchQuery, selectedCategory],
@@ -73,10 +72,6 @@ const Home = ({ searchQuery }) => {
         keepPreviousData: true,
         refetchOnWindowFocus: false
     });
-
-    useEffect(() => {
-        setPreferences(getPreferences());
-    }, []);
 
     console.log(selectedSource);
     // Apply filters based on preferences

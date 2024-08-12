@@ -12,8 +12,8 @@ import {
 import { CATEGORIES, SOURCES } from './constants';
 
 const ModalPreferences = ({ open, handleClose }) => {
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [selectedSources, setSelectedSources] = useState([]);
+    const [selectedCategorie, setSelectedCategories] = useState('');
+    const [selectedSource, setSelectedSources] = useState('');
 
     const handleCategoryChange = (event) => {
         setSelectedCategories(event.target.value);
@@ -24,8 +24,8 @@ const ModalPreferences = ({ open, handleClose }) => {
     };
 
     const handleSave = () => {
-        localStorage.setItem('preferredCategories', JSON.stringify(selectedCategories));
-        localStorage.setItem('preferredSource', selectedSources[0]);
+        localStorage.setItem('preferredCategorie', selectedCategorie);
+        localStorage.setItem('preferredSource', selectedSource);
         handleClose();
     };
 
@@ -60,10 +60,9 @@ const ModalPreferences = ({ open, handleClose }) => {
                         <InputLabel id="category-label">Category</InputLabel>
                         <Select
                             labelId="category-label"
-                            multiple
-                            value={selectedCategories}
+                            value={selectedCategorie}
                             onChange={handleCategoryChange}
-                            renderValue={(selected) => selected.join(', ')}
+                            renderValue={(selected) => selected}
                         >
                             {CATEGORIES.map((category) => (
                                 <MenuItem key={category} value={category}>
@@ -76,10 +75,9 @@ const ModalPreferences = ({ open, handleClose }) => {
                         <InputLabel id="source-label">Source</InputLabel>
                         <Select
                             labelId="source-label"
-                            multiple
-                            value={selectedSources}
+                            value={selectedSource}
                             onChange={handleSourceChange}
-                            renderValue={(selected) => selected.join(', ')}
+                            renderValue={(selected) => selected}
                         >
                             {SOURCES.map((source) => (
                                 <MenuItem key={source} value={source}>
