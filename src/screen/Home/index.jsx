@@ -16,6 +16,7 @@ const fetchNews = async (query, category) => {
     const apiData = results[1].status === 'fulfilled' ? results[1].value : [];
     const newYorkTimesData = results[2].status === 'fulfilled' ? results[2].value : [];
 
+    console.log({apiData})
     const newsToShow = apiData.map((item) => ({
         title: item.title,
         description: item.body,
@@ -53,9 +54,9 @@ const fetchNews = async (query, category) => {
 };
 
 const getPreferences = () => {
-    const source = localStorage.getItem('preferredSource') || '';
-    const category = localStorage.getItem('preferredCategory') || '';
-    const author = localStorage.getItem('preferredAuthor') || '';
+    const source = JSON.parse(localStorage.getItem('preferredCategories')) || '';
+    const category = JSON.parse(localStorage.getItem('preferredSources')) || '';
+    const author = JSON.parse(localStorage.getItem('preferredCategories')) || '';
     return { source, category, author };
 };
 
@@ -66,7 +67,9 @@ const Home = ({ searchQuery }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const articlesPerPage = 24;
 
+    console.log(getPreferences())
     // Fetch news data
+
     const { data: articles = [], isLoading } = useQuery({
         queryKey: ['news', searchQuery, selectedCategory],
         queryFn: () => fetchNews(searchQuery, selectedCategory),
@@ -75,7 +78,7 @@ const Home = ({ searchQuery }) => {
     });
 
     // Get saved preferences
-    const preferences = getPreferences();
+    const preferences = {};
 
     // Apply filters based on preferences
     const filteredArticles = useMemo(() => {
