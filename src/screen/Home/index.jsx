@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Container, Grid, FormControl, InputLabel, Select, MenuItem, TextField, CircularProgress, Backdrop, Button } from '@mui/material';
 import NewsCard from '../../components/NewsCard';
@@ -16,7 +16,6 @@ const fetchNews = async (query, category) => {
     const apiData = results[1].status === 'fulfilled' ? results[1].value : [];
     const newYorkTimesData = results[2].status === 'fulfilled' ? results[2].value : [];
 
-    console.log({apiData})
     const newsToShow = apiData.map((item) => ({
         title: item.title,
         description: item.body,
@@ -54,21 +53,19 @@ const fetchNews = async (query, category) => {
 };
 
 const getPreferences = () => {
-    const source = JSON.parse(localStorage.getItem('preferredCategories')) || '';
-    const category = JSON.parse(localStorage.getItem('preferredSources')) || '';
-    const author = JSON.parse(localStorage.getItem('preferredCategories')) || '';
+    const source = localStorage.getItem('preferredSource') || '';
+    const category = JSON.parse(localStorage.getItem('preferredCategories')) || '';
+    const author = JSON.parse(localStorage.getItem('preferredAuthors')) || '';
     return { source, category, author };
 };
 
 const Home = ({ searchQuery }) => {
-    const [selectedSource, setSelectedSource] = useState('');
+    const [selectedSource, setSelectedSource] = useState(localStorage.getItem('preferredSource') || '');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
+    const [preferences, setPreferences] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const articlesPerPage = 24;
-
-    console.log(getPreferences())
-    // Fetch news data
 
     const { data: articles = [], isLoading } = useQuery({
         queryKey: ['news', searchQuery, selectedCategory],
@@ -77,22 +74,24 @@ const Home = ({ searchQuery }) => {
         refetchOnWindowFocus: false
     });
 
-    // Get saved preferences
-    const preferences = {};
+    useEffect(() => {
+        setPreferences(getPreferences());
+    }, []);
 
+    console.log(selectedSource);
     // Apply filters based on preferences
     const filteredArticles = useMemo(() => {
         const filtered = articles.filter(article => {
+            if(selectedSource === "") return true;
             const matchesSource = selectedSource ? article.source === selectedSource : true;
-            const matchesCategory = preferences.category ? article.category === preferences.category : true;
-            const matchesAuthor = preferences.author ? article.author === preferences.author : true;
+            // const matchesAuthor = preferences.author ? article.author === preferences.author : true;
             const matchesDate = selectedDate ? new Date(article.dateTime).toDateString() === new Date(selectedDate).toDateString() : true;
 
-            return matchesSource && matchesCategory && matchesAuthor && matchesDate;
+            return matchesSource && matchesDate;
         });
 
         return filtered;
-    }, [articles, preferences, selectedDate, selectedSource]);
+    }, [articles, selectedDate, selectedSource]);
 
     const indexOfLastArticle = currentPage * articlesPerPage;
     const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;

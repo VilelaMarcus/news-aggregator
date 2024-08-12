@@ -25,7 +25,7 @@ const ModalPreferences = ({ open, handleClose }) => {
 
     const handleSave = () => {
         localStorage.setItem('preferredCategories', JSON.stringify(selectedCategories));
-        localStorage.setItem('preferredSources', JSON.stringify(selectedSources));
+        localStorage.setItem('preferredSource', selectedSources[0]);
         handleClose();
     };
 
